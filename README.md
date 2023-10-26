@@ -53,8 +53,9 @@ This Docker has everything contained inside:
 - The toolchain for the SF2000
 - The code for the RTOS from this repo
 
-Configuration is done in `config/defaultconfig`. Once configure, build the "OS" with `make sf2000`.
+Configuration is done in `config/defaultconfig`. 
+Once configured, build the "OS" with `make all`.
 
 Voila! You have just compiled FreeRTOS for the SF2000, and should have a ready to use* `bsrv.asd` in the `output` folder.
 
-*As of 2023-10-25, this has not been tested on actual hardware and is expect to (best case scenario) not work, or possibly (worst case) break things and potentially make your device unusable.
+*As of 2023-10-25, this has not been tested on actual hardware and is expected to (best case scenario) not work, or possibly (worst case) break things and potentially make your device unusable.
