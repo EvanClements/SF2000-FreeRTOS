@@ -75,6 +75,31 @@ extern "C"
 #define portIPL_SHIFT               10
 #define portALL_IPL_BITS			( 0x3FUL << portIPL_SHIFT )
 
+/* this replaces the ei command to make the code MIPS32 Release 1 compliant  */
+void enable_interrupts() {
+    // Save the current Status Register value
+    unsigned int sr_value;
+    __asm__ __volatile__("mfc0 %0, $12" : "=r" (sr_value));
+
+    // Set the IE (Interrupt Enable) bit to enable interrupts
+    sr_value |= 0x1;
+
+    // Write the modified SR value back to the Status Register
+    __asm__ __volatile__("mtc0 %0, $12" : : "r" (sr_value));
+}
+
+void disable_interrupts() {
+    // Save the current Status Register value
+    unsigned int sr_value;
+    __asm__ __volatile__("mfc0 %0, $12" : "=r" (sr_value));
+	
+    // Clear the IE (Interrupt Enable) bit to disable interrupts
+    sr_value &= ~0x1;  // Clear the IE bit in sr_value
+
+    // Write the modified SR value back to the Status Register
+    __asm__ __volatile__("mtc0 %0, $12" : : "r" (sr_value));
+}
+
 /* This clears the IPL bits, then sets them to
 configMAX_SYSCALL_INTERRUPT_PRIORITY.  An extra check is performed if
 configASSERT() is defined to ensure an assertion handler does not inadvertently
@@ -122,11 +147,21 @@ uint32_t ulStatus;														\
 
 #ifndef _mips_intenable
 /* MIPS32r2 atomic interrupt enable */
-#define _mips_intenable() __extension__({ \
-    unsigned int __v; \
-    __asm__ __volatile__ ("ei %0; ehb" : "=d" (__v)); \
-    __v; \
-})
+// #define _mips_intenable() __extension__({ \
+    // unsigned int __v; \
+    // __asm__ __volatile__ ("ei %0; ehb" : "=d" (__v)); \
+    // __v; \
+// })
+
+/* MIPS32r1 atomic interrupt enable */
+#define _mips_intenable() enable_interrupts()
+
+#endif
+
+#ifndef _mips_intdisable
+
+#define _mips_intdisable() disable_interrupts()
+
 #endif
 
 #define portDISABLE_INTERRUPTS( )	_mips_intdisable( );

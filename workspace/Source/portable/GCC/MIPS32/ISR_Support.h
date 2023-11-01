@@ -144,7 +144,18 @@ As we are using Count/Compare as our timer, this fires on Status(HW5). */
 	sw			k1, (s7)
 
 	mfc0		s6, C0_CAUSE
-	ins			s6, zero, 8, 1
+	// ins			s6, zero, 8, 1
+
+	// Extract the bitfield from register s0
+	srl $t0, $zero, 8     // Shift right by 8 bits to position the bitfield
+	andi $t0, $t0, 1   // Mask to extract the desired 1-bit bitfield
+
+	// Clear the target bit in register s6 (assuming you want to insert into s6)
+	srl $s6, $s6, 1     // Shift right by 1 bit to clear the target bit
+
+	// Insert the extracted bit into register s6
+	or $s6, $s6, $t0    // OR operation to insert the extracted 1-bit bitfield
+
 	mtc0		s6, C0_CAUSE
 	ehb
 
